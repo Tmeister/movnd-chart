@@ -112,6 +112,13 @@ class Movnd_Public
             'callback' => [$this, 'get_chart_data'],
             'args' => ['id'],
         ]);
+
+        register_rest_route('charts/v1', '/global(?:/(?P<id>\d+))?', [
+            'methods' => 'GET',
+            'callback' => [$this, 'get_global_data'],
+            'args' => ['id'],
+        ]);
+
     }
 
     /**
@@ -126,6 +133,12 @@ class Movnd_Public
         return '<div id="ui-missing"></div>';
     }
 
+    /**
+     * Get the data by state
+     *
+     * @param WP_REST_Request $request
+     * @return void
+     */
     public function get_chart_data(WP_REST_Request $request)
     {
         $state = $request->get_param('id') ?: false;
@@ -160,5 +173,79 @@ class Movnd_Public
         }
 
         return $clean;
+    }
+
+    public function get_global_data(WP_REST_Request $request)
+    {
+        $state = $request->get_param('id') ?: false;
+
+        $args = [
+            'post_type' => 'desapariciones',
+            'meta_key' => 'year',
+            'orderby' => 'meta_value_num',
+            'order' => 'ASC',
+            'posts_per_page' => -1,
+        ];
+
+        if ($state) {
+            $args['tax_query'] = [
+                [
+                    'taxonomy' => 'estado',
+                    'field' => 'term_id',
+                    'terms' => $state,
+                ],
+            ];
+        }
+
+        $query = new WP_query($args);
+
+        $data = [];
+        $woman_total = 0;
+        $men_total = 0;
+        $grant_total = 0;
+
+        foreach ($query->posts as $post) {
+            $woman = get_field('woman', $post->ID);
+            $men = get_field('man', $post->ID);
+            $total = get_field('total', $post->ID);
+            $year = get_field('year', $post->ID);
+            $woman_total += (int) $woman;
+            $men_total += (int) $men;
+            $grant_total += (int) $total;
+            $data[$year]['woman'] += $woman;
+            $data[$year]['men'] += $men;
+            $data[$year]['total'] += $total;
+        }
+
+        /**
+         * Fosas
+         */
+
+        $fosas = 0;
+        $some = 0;
+
+        if (!$state) {
+            $states = get_terms([
+                'taxonomy' => 'estado',
+            ]);
+
+            foreach ($states as $term) {
+                $value = (int) get_field('fosas', $term);
+                if (is_integer($value)) {
+                    $fosas += $value;
+                }
+            }
+        } else {
+            $term = get_term($state, 'estado');
+            $fosas = get_field('fosas', $term);
+        }
+
+        return [
+            'woman_total' => number_format($woman_total, 0, '.', ','),
+            'men_total' => number_format($men_total, 0, '.', ','),
+            'total' => number_format($grant_total, 0, '.', ','),
+            'fosas' => number_format($fosas, 0, '.', ','),
+            'chart' => $data,
+        ];
     }
 }
