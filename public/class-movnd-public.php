@@ -213,7 +213,7 @@ class Movnd_Public
             $men_total += (int) $men;
             $grant_total += (int) $total;
             $data[$year]['woman'] += $woman;
-            $data[$year]['men'] += $men;
+            $data[$year]['man'] += $men;
             $data[$year]['total'] += $total;
         }
 

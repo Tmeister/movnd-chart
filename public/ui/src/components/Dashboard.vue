@@ -52,16 +52,16 @@
 </template>
 
 <script>
-import axios from "axios";
-import LineChart from "./LineChart.vue";
+import axios from 'axios';
+import LineChart from './LineChart.vue';
 
 export default {
-  name: "Dashboard",
+  name: 'Dashboard',
   components: {
-    LineChart
+    LineChart,
   },
   props: {
-    msg: String
+    msg: String,
   },
   data() {
     return {
@@ -75,14 +75,14 @@ export default {
       chartData: null,
       options: {
         responsive: true,
-        maintainAspectRatio: false
-      }
+        maintainAspectRatio: false,
+      },
     };
   },
   computed: {
     fosasLabel() {
-      return this.fosas_total ? this.fosas_total : "N/A";
-    }
+      return this.fosas_total ? this.fosas_total : 'N/A';
+    },
   },
   mounted() {
     this.getStates();
@@ -90,14 +90,14 @@ export default {
   },
   methods: {
     getGlobalData() {
-      let apiUrl = "";
+      let apiUrl = '';
       if (this.state) {
         apiUrl = `${this.siteUrl}/wp-json/charts/v1/global/${this.state}`;
       } else {
         apiUrl = `${this.siteUrl}/wp-json/charts/v1/global`;
       }
       axios(apiUrl)
-        .then(response => {
+        .then((response) => {
           if (response.status === 200) {
             const chart = Object.entries(response.data.chart);
             const labels = chart.map(item => item[0]);
@@ -107,126 +107,126 @@ export default {
             this.fosas_total = response.data.fosas;
             const datasets = [
               {
-                label: "Mujeres",
+                label: 'Mujeres',
                 data: chart.map(item => item[1].woman),
-                backgroundColor: "rgb(255, 215, 60)",
-                borderColor: "rgb(255, 215, 60)",
-                fill: false
+                backgroundColor: 'rgb(255, 215, 60)',
+                borderColor: 'rgb(255, 215, 60)',
+                fill: false,
               },
               {
-                label: "Hombres",
+                label: 'Hombres',
                 data: chart.map(item => item[1].man),
-                backgroundColor: "rgb(160, 195, 205)",
-                borderColor: "rgb(160, 195, 205)",
-                fill: false
+                backgroundColor: 'rgb(160, 195, 205)',
+                borderColor: 'rgb(160, 195, 205)',
+                fill: false,
               },
               {
-                label: "Total",
+                label: 'Total',
                 data: chart.map(item => item[1].total),
-                backgroundColor: "rgb(254, 78, 53)",
-                borderColor: "rgb(254, 78, 53)",
-                fill: false
-              }
+                backgroundColor: 'rgb(254, 78, 53)',
+                borderColor: 'rgb(254, 78, 53)',
+                fill: false,
+              },
             ];
             this.chartData = {
               labels,
-              datasets
+              datasets,
             };
           } else {
             /* eslint no-console: "off" */
-            console.log("Error en estados");
+            console.log('Error en estados');
           }
         })
-        .catch(error => {
+        .catch((error) => {
           /* eslint no-console: "off" */
-          console.log("error :", error);
+          console.log('error :', error);
         });
     },
     getStates() {
       const apiUrl = `${this.siteUrl}/wp-json/wp/v2/estado`;
       axios(apiUrl, {
         params: {
-          per_page: 100
-        }
+          per_page: 100,
+        },
       })
-        .then(response => {
+        .then((response) => {
           if (response.status === 200) {
             const states = response.data.map(item => ({
               value: item.id,
-              label: item.name
+              label: item.name,
             }));
 
             this.states = [
               {
                 value: -1,
-                label: "Todos"
+                label: 'Todos',
               },
-              ...states
+              ...states,
             ];
           } else {
             /* eslint no-console: "off" */
-            console.log("error loading states");
+            console.log('error loading states');
           }
         })
-        .catch(error => {
+        .catch((error) => {
           /* eslint no-console: "off" */
-          console.log("error :", error);
+          console.log('error :', error);
         });
     },
     getStateData() {
       const apiUrl = `${this.siteUrl}/wp-json/charts/v1/state/${this.state}`;
       axios(apiUrl)
-        .then(response => {
+        .then((response) => {
           if (response.status === 200) {
             const { data } = response;
             const labels = data.map(item => item.year);
             const datasets = [
               {
-                label: "Mujeres",
+                label: 'Mujeres',
                 data: data.map(item => item.woman),
-                backgroundColor: "rgb(255, 215, 60)",
-                borderColor: "rgb(255, 215, 60)",
-                fill: false
+                backgroundColor: 'rgb(255, 215, 60)',
+                borderColor: 'rgb(255, 215, 60)',
+                fill: false,
               },
               {
-                label: "Hombres",
+                label: 'Hombres',
                 data: data.map(item => item.man),
-                backgroundColor: "rgb(160, 195, 205)",
-                borderColor: "rgb(160, 195, 205)",
-                fill: false
+                backgroundColor: 'rgb(160, 195, 205)',
+                borderColor: 'rgb(160, 195, 205)',
+                fill: false,
               },
               {
-                label: "Total",
+                label: 'Total',
                 data: data.map(item => item.total),
-                backgroundColor: "rgb(254, 78, 53)",
-                borderColor: "rgb(254, 78, 53)",
-                fill: false
-              }
+                backgroundColor: 'rgb(254, 78, 53)',
+                borderColor: 'rgb(254, 78, 53)',
+                fill: false,
+              },
             ];
             this.chartData = {
               labels,
-              datasets
+              datasets,
             };
           } else {
             /* eslint no-console: "off" */
-            console.log("Error en estados");
+            console.log('Error en estados');
           }
         })
-        .catch(error => {
+        .catch((error) => {
           /* eslint no-console: "off" */
-          console.log("error :", error);
+          console.log('error :', error);
         });
     },
     handleSelectChange() {
-      console.log("this.state :", this.state);
+      console.log('this.state :', this.state);
       if (this.state === -1) {
         this.state = null;
       } else {
         this.getStateData();
       }
       this.getGlobalData();
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -277,8 +277,6 @@ h4 {
     flex-direction: column;
     .box-init {
       text-align: center;
-    }
-    .boxed {
     }
   }
 }
