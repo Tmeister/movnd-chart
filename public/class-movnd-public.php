@@ -118,7 +118,6 @@ class Movnd_Public
             'callback' => [$this, 'get_global_data'],
             'args' => ['id'],
         ]);
-
     }
 
     /**
@@ -205,10 +204,15 @@ class Movnd_Public
         $grant_total = 0;
 
         foreach ($query->posts as $post) {
+            $year = get_field('year', $post->ID);
+            if (!$state) {
+                if ((int) $year < 2006) {
+                    continue;
+                }
+            }
             $woman = get_field('woman', $post->ID);
             $men = get_field('man', $post->ID);
             $total = get_field('total', $post->ID);
-            $year = get_field('year', $post->ID);
             $woman_total += (int) $woman;
             $men_total += (int) $men;
             $grant_total += (int) $total;
@@ -222,7 +226,6 @@ class Movnd_Public
          */
 
         $fosas = 0;
-        $some = 0;
 
         if (!$state) {
             $states = get_terms([
@@ -241,10 +244,15 @@ class Movnd_Public
         }
 
         return [
-            'woman_total' => number_format($woman_total, 0, '.', ','),
-            'men_total' => number_format($men_total, 0, '.', ','),
-            'total' => number_format($grant_total, 0, '.', ','),
-            'fosas' => number_format($fosas, 0, '.', ','),
+            // 'woman_total' => number_format($woman_total, 0, '.', ','),
+            // 'men_total' => number_format($men_total, 0, '.', ','),
+            // 'total' => number_format($grant_total, 0, '.', ','),
+            // 'fosas' => number_format($fosas, 0, '.', ','),
+            'woman_total' => get_field('missing_woman', 'options'),
+            'men_total' => get_field('missing_man', 'options'),
+            'total' => get_field('missing_total', 'options'),
+            'fosas' => get_field('fosas_total', 'options'),
+            'bodies' => get_field('total_bodies', 'options'),
             'chart' => $data,
         ];
     }

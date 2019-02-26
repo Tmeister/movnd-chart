@@ -3,7 +3,12 @@
     <el-row class="selector">
       <el-col class="box-init">
         <h4>Ver por estado:</h4>
-        <el-select class="select" v-model="state" placeholder="Todos" @change="handleSelectChange">
+        <el-select
+          class="select"
+          v-model="state"
+          placeholder="Nacional"
+          @change="handleSelectChange"
+        >
           <el-option
             v-for="item in states"
             :key="item.value"
@@ -42,6 +47,14 @@
           </p>
         </div>
       </el-col>
+      <el-col class="boxed">
+        <div class="fosas">
+          <h1>{{ bodies_total }}</h1>
+          <p>Total de cuerpos
+            <br>encontradas
+          </p>
+        </div>
+      </el-col>
     </el-row>
     <el-row class="chart-holder">
       <el-col :span="24">
@@ -72,6 +85,7 @@ export default {
       woman_total: 0,
       man_total: 0,
       fosas_total: 0,
+      bodies_total: 0,
       chartData: null,
       options: {
         responsive: true,
@@ -105,6 +119,7 @@ export default {
             this.woman_total = response.data.woman_total;
             this.man_total = response.data.men_total;
             this.fosas_total = response.data.fosas;
+            this.bodies_total = response.data.bodies;
             const datasets = [
               {
                 label: 'Mujeres',
@@ -159,7 +174,7 @@ export default {
             this.states = [
               {
                 value: -1,
-                label: 'Todos',
+                label: 'Nacional',
               },
               ...states,
             ];
