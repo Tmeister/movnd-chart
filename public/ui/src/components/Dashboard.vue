@@ -49,9 +49,9 @@
       </el-col>
       <el-col class="boxed">
         <div class="fosas">
-          <h1>{{ bodies_total }}</h1>
+          <h1>{{ bodyLabel }}</h1>
           <p>Total de cuerpos
-            <br>encontradas
+            <br>encontrados
           </p>
         </div>
       </el-col>
@@ -96,6 +96,9 @@ export default {
   computed: {
     fosasLabel() {
       return this.fosas_total ? this.fosas_total : 'N/A';
+    },
+    bodyLabel() {
+      return this.bodies_total ? this.bodies_total : 'N/A';
     },
   },
   mounted() {
