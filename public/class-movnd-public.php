@@ -226,6 +226,7 @@ class Movnd_Public
          */
 
         $fosas = 0;
+        $bodies = 0;
 
         if (!$state) {
             $states = get_terms([
@@ -234,26 +235,40 @@ class Movnd_Public
 
             foreach ($states as $term) {
                 $value = (int) get_field('fosas', $term);
+                $bodies_value = (int) get_field('bodies', $term);
                 if (is_integer($value)) {
                     $fosas += $value;
+                }
+                if (is_integer($bodies_value)) {
+                    $bodies += $bodies_value;
                 }
             }
         } else {
             $term = get_term($state, 'estado');
             $fosas = get_field('fosas', $term);
+            $bodies = get_field('bodies', $term);
         }
 
-        return [
-            // 'woman_total' => number_format($woman_total, 0, '.', ','),
-            // 'men_total' => number_format($men_total, 0, '.', ','),
-            // 'total' => number_format($grant_total, 0, '.', ','),
-            // 'fosas' => number_format($fosas, 0, '.', ','),
-            'woman_total' => get_field('missing_woman', 'options'),
-            'men_total' => get_field('missing_man', 'options'),
-            'total' => get_field('missing_total', 'options'),
-            'fosas' => get_field('fosas_total', 'options'),
-            'bodies' => get_field('total_bodies', 'options'),
-            'chart' => $data,
-        ];
+        if (!$state) {
+            $final_data = [
+                'woman_total' => get_field('missing_woman', 'options'),
+                'men_total' => get_field('missing_man', 'options'),
+                'total' => get_field('missing_total', 'options'),
+                'fosas' => get_field('fosas_total', 'options'),
+                'bodies' => get_field('total_bodies', 'options'),
+                'chart' => $data,
+            ];
+        } else {
+            $final_data = [
+                'woman_total' => number_format($woman_total, 0, '.', ','),
+                'men_total' => number_format($men_total, 0, '.', ','),
+                'total' => number_format($grant_total, 0, '.', ','),
+                'fosas' => number_format($fosas, 0, '.', ','),
+                'bodies' => number_format($bodies, 0, '.', ','),
+                'chart' => $data,
+            ];
+        }
+
+        return $final_data;
     }
 }
